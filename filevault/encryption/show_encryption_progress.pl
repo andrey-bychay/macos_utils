@@ -69,7 +69,7 @@ sub best_scale {
     croak "ERROR: undefined pc" unless defined $pc;
     croak "ERROR: pc=$pc" if $pc > 100;
 
-    my $lpc = int($pc) - int($pc) % 10;
+    my $lpc = $pc > 10 ? $pc - 10 : 0;
     my $rpc = $lpc + 10;
     croak "ERROR: pc=$pc, lpc=$lpc, rpc=$rpc" if $lpc > $rpc || $lpc > $pc || $rpc < $pc;
     
