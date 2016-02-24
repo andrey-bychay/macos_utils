@@ -81,10 +81,12 @@ sub best_scale {
         # candidate scales
 	my $sc1 = round_to(($sc - $lsc) / 2 + $lsc, 10);
 	my $sc2 = round_to(($rsc - $sc) / 2 + $sc, 10);
+        # check if we have any progress
+        last unless (abs($lsc - $sc1) > 0.1 || abs($rsc - $sc2) > 0.1);
         # candidate distances
         my $dt1 = get_dist($lpc, $rpc, $sc1);
         my $dt2 = get_dist($lpc, $rpc, $sc2);
-#print "# pc=$pc, lpc=$lpc, rpc=$rpc, sc=$sc, sc1=$sc1, sc2=$sc2, dt1=$dt1, dt2=$dt2\n";
+#print "# pc=$pc, lpc=$lpc, rpc=$rpc, sc=$sc, sc1=$sc1, sc2=$sc2, dt1=$dt1, dt2=$dt2, lsc=$lsc, rsc=$rsc\n";
         # choose the best and make next turn
         if ($dt1 > $best_dt) {
 #print "# <<\n";
