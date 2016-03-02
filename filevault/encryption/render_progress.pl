@@ -3,7 +3,7 @@ use Carp;
 
 my $scale = shift;
 my $bar_max = shift;
-my $log_level = -1;
+my $log_level = -5;
 
 $bar_max = 200 unless defined $bar_max;
 
@@ -12,7 +12,7 @@ my $ts;
 while (<>) {
     chomp;
     $ts = $_ if /\d\d:\d\d:\d\d/;
-    if (/^Encryption in progress:/ && /([\d.]+)$/) {
+    if (/^Encryption in progress:/ && /([\d.]+|Pending)$/) {
         my $pc = $1;
         $max_pc = $pc if $max_pc < $pc;
         log1(">> pc=$pc");
@@ -143,6 +143,7 @@ sub align_pc {
     my $pc = shift; # percentage
     croak "ERROR: undefined pc" unless defined $pc;
     croak "ERROR: pc=$pc" if $pc > 100;
+    $pc = '-' x 5 if length($pc) > 5;
     return ' ' x (5 - length($pc)) . $pc;
 }
 
