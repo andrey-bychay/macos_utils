@@ -3,6 +3,7 @@ use Carp;
 
 my $scale = shift;
 my $bar_max = shift;
+my $log_level = -1;
 
 $bar_max = 200 unless defined $bar_max;
 
@@ -14,21 +15,42 @@ while (<>) {
     if (/^Encryption in progress:/ && /([\d.]+)$/) {
         my $pc = $1;
         $max_pc = $pc if $max_pc < $pc;
+        log1(">> pc=$pc");
 
         my $apc = align_pc($pc);
+        log1("apc=$apc");
         my $mapc = align_pc($max_pc);
+        log1("mapc=$mapc");
 
         my $sc = defined($scale) ? $scale : best_scale($pc);
         $scale = $sc;
+        log1("scale=$scale");
 
         my $pcs = scale_pc($pc, $sc);
+        log1("pcs=$pcs");
         my $apcs = align_sc($pcs);
+        log1("apcs=$apcs");
 
         my $bar = draw_bar($pcs);
+        log1("    bar:$bar");
         $bar = grid_bar($bar, $sc);
+        log1("gridbar:$bar");
 
         print "$ts: $apc/$mapc {$apcs/$bar_max}[$bar] *$sc\n";
     }
+}
+
+sub log0 {
+    my $msg = shift;
+    print "#0:$msg\n" if 0 <= $log_level;
+}
+sub log1 {
+    my $msg = shift;
+    print "#1:$msg\n" if 1 <= $log_level;
+}
+sub log2 {
+    my $msg = shift;
+    print "#2:$msg\n" if 2 <= $log_level;
 }
 
 # scale percantage to integer [0 .. $bar_max]
@@ -78,36 +100,40 @@ sub best_scale {
     while ($rsc - $lsc > 0.1) {
         # current scale
         my $sc = round_to(($rsc - $lsc) / 2 + $lsc, 10);
+
         # candidate scales
 	my $sc1 = round_to(($sc - $lsc) / 2 + $lsc, 10);
 	my $sc2 = round_to(($rsc - $sc) / 2 + $sc, 10);
+
         # check if we have any progress
         last unless (abs($lsc - $sc1) > 0.1 || abs($rsc - $sc2) > 0.1);
+
         # candidate distances
         my $dt1 = get_dist($lpc, $rpc, $sc1);
         my $dt2 = get_dist($lpc, $rpc, $sc2);
-#print "# pc=$pc, lpc=$lpc, rpc=$rpc, sc=$sc, sc1=$sc1, sc2=$sc2, dt1=$dt1, dt2=$dt2, lsc=$lsc, rsc=$rsc\n";
+        log2("pc=$pc, lpc=$lpc, rpc=$rpc, sc=$sc, sc1=$sc1, sc2=$sc2, dt1=$dt1, dt2=$dt2, lsc=$lsc, rsc=$rsc");
+
         # choose the best and make next turn
         if ($dt1 > $best_dt) {
-#print "# <<\n";
+            log2("<<");
             $best_dt = $dt1;
             $best_sc = $sc1;
             $rsc = $sc;
         }
         elsif ($dt2 > $best_dt) {
-#print "# >>\n";
+            log2(">>");
             $best_dt = $dt2;
             $best_sc = $sc2;
             $lsc = $sc;
         }
         else {
-#print "# ><\n";
+            log2("><");
             $best_dt = get_dist($lpc, $rpc, $sc);
             $best_sc = $sc;
             $lsc = $sc1;
             $rsc = $sc2;
         }
-#print "# best_sc=$best_sc, best_dt=$best_dt\n";
+        log1("pc=$pc, best_sc=$best_sc, best_dt=$best_dt");
     }
     return $best_sc;
 }

@@ -1,3 +1,3 @@
 #!/bin/bash
-tail -fn300 ~/encryption.log | ./show_encryption_progress.pl
+tail -fn300 ~/encryption.log | ./render_progress.pl
 
