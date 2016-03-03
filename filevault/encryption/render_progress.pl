@@ -7,7 +7,7 @@ my $log_level = -5;
 
 $bar_max = 200 unless defined $bar_max;
 
-my $max_pc = 0;
+my ($last_pc, $max_pc) = (-1, 0);
 my $ts;
 while (<>) {
     chomp;
@@ -36,7 +36,8 @@ while (<>) {
         $bar = grid_bar($bar, $sc);
         log1("gridbar:$bar");
 
-        print "$ts: $apc/$mapc {$apcs/$bar_max}[$bar] *$sc\n";
+        print "$ts: $apc/$mapc {$apcs/$bar_max}[$bar] *$sc\n" if $last_pc != $pc;
+        $last_pc = $pc;
     }
 }
 
