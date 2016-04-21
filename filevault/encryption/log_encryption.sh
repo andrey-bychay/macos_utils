@@ -1,3 +1,3 @@
 #!/bin/bash
-watch -n10 '(date; fdesetup status;) | tee -a ~/encryption.log'
+watch -n60 '(date; fdesetup status;) | tee -a ~/encryption.log'
 
