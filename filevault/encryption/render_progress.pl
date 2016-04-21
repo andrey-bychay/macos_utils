@@ -139,13 +139,13 @@ sub best_scale {
     return $best_sc;
 }
 
-# align percentage to be 5 chars
+# align percentage to be 6 chars
 sub align_pc {
     my $pc = shift; # percentage
     croak "ERROR: undefined pc" unless defined $pc;
     croak "ERROR: pc=$pc" if $pc > 100;
-    $pc = '-' x 5 if length($pc) > 5;
-    return ' ' x (5 - length($pc)) . $pc;
+    $pc = '-' x 6 if length($pc) > 6;
+    return ' ' x (6 - length($pc)) . $pc;
 }
 
 # align scale to be 3 chars
